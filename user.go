@@ -90,6 +90,25 @@ func (this *User) DoMessage(msg string) {
 			this.SendMsg("您已经更新用户名:" + this.Name + "\n")
 		}
 
+	} else if len(msg) > 4 && msg[:3] == "to|" {
+		name := strings.Split(msg, "|")[1]
+
+		if name == "" {
+			this.SendMsg("消息格式不正确，请使用 \"to|张三|你好啊\" 格式。\n")
+			return
+		}
+		accepter, ok := this.server.OnlineMap[name]
+		if !ok {
+			this.SendMsg("该用户不存在")
+			return
+		}
+		str := strings.Split(msg, "|")[2]
+		if str == "" {
+			this.SendMsg("消息为空，请重新输入")
+			return
+		}
+		accepter.SendMsg(this.Name + "对您说： " + str)
+
 	} else {
 		this.server.BoardCast(this, msg)
 	}
